@@ -9,8 +9,8 @@
         :root {
             --cor-fundo: #2E6417; /* Verde Escuro */
             --cor-fonte: #D0A369; /* Salmão / Dourado */
-            --cor-secundaria: #D0A369; /* Cor para textos dentro do container */
-            --cor-resultado-final: #D0A369; /* Azul padrão para destaque (CAIXA) */
+            --cor-secundaria: #D0A369; /* Cor principal para textos e bordas */
+            --cor-resultado-final: #D0A369; /* Cor de destaque (CAIXA) */
         }
         
         body {
@@ -18,22 +18,23 @@
             margin: 0;
             padding: 20px;
             background-color: var(--cor-fundo); /* Fundo Verde Escuro */
-            color: var(--cor-fonte); /* Fonte Dourada/Salmão */
+            color: var(--cor-fonte); /* Fonte Dourada/Salmão no corpo */
         }
         
         .container {
             max-width: 800px;
             margin: auto;
-            background: #2E6417; /* Container em Branco para Contraste */
+            background: #2E6417; /* Container na cor do fundo para unidade visual */
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            color: var(--cor-secundaria); /* Texto dentro do container em cinza escuro */
+            color: var(--cor-secundaria); /* Texto dentro do container na cor de destaque */
         }
         
         h2 {
             color: var(--cor-secundaria);
-            border-bottom: 2px solid ##2E6417;
+            /* CORREÇÃO: Removido o `#` extra e usado a cor de destaque */
+            border-bottom: 2px solid var(--cor-secundaria); 
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -51,25 +52,28 @@
             font-weight: bold;
         }
         
+        /* Ajustando a cor do texto do input para ser legível */
         input[type="number"] {
             flex: 2;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--cor-secundaria);
             border-radius: 4px;
             width: 100%;
             box-sizing: border-box;
+            background-color: #3e8e2e; /* Fundo do input ligeiramente mais claro */
+            color: #fff; /* Cor do texto no input branco para contraste */
         }
         
         .result-item {
             padding: 10px 0;
-            border-top: 1px dashed #eee;
+            border-top: 1px dashed #6b9e5d; /* Linhas mais visíveis */
         }
         
         .result-item:last-child {
             font-size: 1.1em;
             font-weight: bold;
             color: var(--cor-resultado-final); 
-            border-top: 2px solid #ccc;
+            border-top: 2px solid var(--cor-secundaria);
             margin-top: 15px;
         }
         
@@ -80,17 +84,18 @@
         
         .result-value {
             text-align: right;
-            font-weight: normal;
+            font-weight: bold; /* Deixando os resultados em negrito */
+            color: var(--cor-resultado-final);
         }
         
         .section-header {
-            background-color: #e9ecef;
+            background-color: #3e8e2e;
             padding: 8px;
             border-radius: 4px;
             margin-top: 20px;
             margin-bottom: 10px;
             font-weight: bold;
-            color: #495057;
+            color: #fff; /* Título da seção em branco para contraste */
         }
     </style>
 </head>
@@ -164,6 +169,9 @@
     <script>
         // Função para formatar o número como moeda BRL
         function formatarMoeda(valor) {
+            // Garante que o valor não é um número inválido antes de formatar
+            if (isNaN(valor)) return 'R$ 0,00';
+            
             return 'R$ ' + valor.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
 
@@ -178,9 +186,9 @@
             const percImpostos = (parseFloat(document.getElementById('percImpostos').value) || 0) / 100;
             const percTaxasPagamento = (parseFloat(document.getElementById('percTaxasPagamento').value) || 0) / 100;
 
-            // 3. Cálculos conforme as fórmulas adaptadas
+            // 3. Cálculos
             
-            // Valor Sem Impostos e Taxas = Preço Alvo - Rateio Acumulado
+            // Valor Sem Impostos e Taxas (agora chamado "Valor descontando despesas")
             const valorSemImpostosTaxas = precoAlvo - rateioAcumulado;
 
             // Valor de Impostos
@@ -202,7 +210,10 @@
             const caixa = valorLiquido - valorRetornoInvestimento - valorNovosInvestimentos;
 
             // 4. Exibição dos resultados formatados
-            document.getElementById('valorSemImpostosTaxas').textContent = formatarMoeda(valorSemImpostosTaxas);
+            
+            // CORREÇÃO APLICADA AQUI: O ID foi atualizado para valorDescontandoDespesas
+            document.getElementById('valorDescontandoDespesas').textContent = formatarMoeda(valorSemImpostosTaxas); 
+            
             document.getElementById('valorImpostos').textContent = formatarMoeda(valorImpostos);
             document.getElementById('valorTaxasPagamento').textContent = formatarMoeda(valorTaxasPagamento);
             document.getElementById('valorLiquido').textContent = formatarMoeda(valorLiquido);
